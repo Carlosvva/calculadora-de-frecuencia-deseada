@@ -1,0 +1,1 @@
+# calculadora-de-frecuencia-deseada
