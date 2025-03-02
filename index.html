@@ -2,26 +2,66 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora de Frecuencia Cardiaca Deseada</title>
   <style>
+    /* Fondo degradado y centrado */
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
+    /* Contenedor principal */
     .container {
+      background-color: #fff;
+      padding: 20px 30px;
+      margin: 20px;
       max-width: 600px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input, select, button {
-      padding: 8px;
-      margin: 5px 0;
       width: 100%;
-      box-sizing: border-box;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
+    h1, h2, h3 {
+      text-align: center;
+      color: #333;
+    }
+    /* Estilos para el formulario */
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #555;
+    }
+    input, select {
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    button {
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      background-color: #5563DE;
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #4353B3;
+    }
+    /* Estilos para las tablas */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -29,11 +69,25 @@
     }
     th, td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 10px;
       text-align: center;
     }
     th {
-      background-color: #eee;
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    /* Ajustes responsivos */
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px 20px;
+        margin: 10px;
+      }
+      input, select, button {
+        font-size: 0.9rem;
+      }
+      th, td {
+        padding: 8px;
+      }
     }
   </style>
 </head>
@@ -73,12 +127,10 @@
         return;
       }
       
-      // Calcular FCM según la fórmula estándar
+      // Calcular FCM usando la fórmula estándar y la fórmula Tanaka
       var fcmStandard = (gender === 'hombre') ? (220 - age) : (226 - age);
-      // Calcular FCM usando la fórmula Tanaka (más exacta para mayores de 40, pero se calcula de todos modos)
       var fcmTanaka = 208 - (0.7 * age);
       
-      // Redondear resultados
       fcmStandard = Math.round(fcmStandard);
       fcmTanaka = Math.round(fcmTanaka);
       
@@ -91,7 +143,7 @@
         { name: "Corazón sano", min: 50, max: 60 }
       ];
       
-      // Función para calcular los rangos de frecuencia en cada zona
+      // Función para calcular los rangos de frecuencia para cada zona
       function calculateZones(fcm, restingHR) {
         return zones.map(function(zone) {
           var lower = Math.round(((fcm - restingHR) * (zone.min / 100)) + restingHR);
