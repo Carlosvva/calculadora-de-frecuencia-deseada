@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Frecuencia Cardiaca Deseada</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      padding: 8px;
+      margin: 5px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de Frecuencia Cardiaca Deseada</h1>
+    <form id="hcForm">
+      <label for="age">Edad:</label>
+      <input type="number" id="age" name="age" required>
+
+      <label for="gender">Sexo:</label>
+      <select id="gender" name="gender">
+        <option value="hombre">Hombre</option>
+        <option value="mujer">Mujer</option>
+      </select>
+
+      <label for="restingHR">Frecuencia Cardiaca en Reposo (ppm):</label>
+      <input type="number" id="restingHR" name="restingHR" required>
+
+      <button type="submit">Calcular Zonas</button>
+    </form>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    document.getElementById('hcForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Obtener valores de entrada
+      var age = parseFloat(document.getElementById('age').value);
+      var gender = document.getElementById('gender').value;
+      var restingHR = parseFloat(document.getElementById('restingHR').value);
+      
+      if(isNaN(age) || isNaN(restingHR)) {
+        alert("Por favor, ingresa valores válidos.");
+        return;
+      }
+      
+      // Calcular FCM según la fórmula estándar
+      var fcmStandard = (gender === 'hombre') ? (220 - age) : (226 - age);
+      // Calcular FCM usando la fórmula Tanaka (más exacta para mayores de 40, pero se calcula de todos modos)
+      var fcmTanaka = 208 - (0.7 * age);
+      
+      // Redondear resultados
+      fcmStandard = Math.round(fcmStandard);
+      fcmTanaka = Math.round(fcmTanaka);
+      
+      // Definir las zonas con sus rangos porcentuales
+      var zones = [
+        { name: "Línea Roja", min: 90, max: 100 },
+        { name: "Cardio anaeróbica", min: 80, max: 90 },
+        { name: "Cardio Aeróbica", min: 70, max: 80 },
+        { name: "Cardio Fitness", min: 60, max: 70 },
+        { name: "Corazón sano", min: 50, max: 60 }
+      ];
+      
+      // Función para calcular los rangos de frecuencia en cada zona
+      function calculateZones(fcm, restingHR) {
+        return zones.map(function(zone) {
+          var lower = Math.round(((fcm - restingHR) * (zone.min / 100)) + restingHR);
+          var upper = Math.round(((fcm - restingHR) * (zone.max / 100)) + restingHR);
+          return { zone: zone.name, lower: lower, upper: upper };
+        });
+      }
+      
+      var zonesStandard = calculateZones(fcmStandard, restingHR);
+      var zonesTanaka = calculateZones(fcmTanaka, restingHR);
+      
+      // Construir la salida HTML
+      var output = "<h2>Resultados</h2>";
+      
+      output += "<h3>Fórmula Estándar (FCM = " + fcmStandard + " ppm)</h3>";
+      output += "<table><tr><th>Zona</th><th>Rango Mínimo (ppm)</th><th>Rango Máximo (ppm)</th></tr>";
+      zonesStandard.forEach(function(z) {
+        output += "<tr><td>" + z.zone + "</td><td>" + z.lower + "</td><td>" + z.upper + "</td></tr>";
+      });
+      output += "</table>";
+      
+      output += "<h3>Fórmula Tanaka (FCM = " + fcmTanaka + " ppm)</h3>";
+      output += "<table><tr><th>Zona</th><th>Rango Mínimo (ppm)</th><th>Rango Máximo (ppm)</th></tr>";
+      zonesTanaka.forEach(function(z) {
+        output += "<tr><td>" + z.zone + "</td><td>" + z.lower + "</td><td>" + z.upper + "</td></tr>";
+      });
+      output += "</table>";
+      
+      document.getElementById('results').innerHTML = output;
+    });
+  </script>
+</body>
+</html>
